@@ -37,7 +37,9 @@ services:
                cd /opt/services/flaskapp/src;
                pip install -r ./requirements.txt;
                python -m nltk.downloader punkt stopwords;
-               while true; do python app.py; done;"
+               while true; do gunicorn -b 0.0.0.0:8000 app:app; done;"
+    ports:
+      - 80:8000
     volumes:
       - ./api:/opt/services/flaskapp/src
     env_file:
@@ -79,21 +81,6 @@ services:
     depends_on:
       - postgres
       - postgres-test
-
-  nginx:
-    build: nginx
-    container_name: pc-nginx
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./certs:/etc/letsencrypt
-      - ./certs-data:/data/letsencrypt
-    networks:
-      - web_nw
-    depends_on:
-      - flask
 
 networks:
   db_nw:
