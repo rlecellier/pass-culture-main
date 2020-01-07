@@ -44,12 +44,13 @@
         src: requirements.txt
         dest: /opt/jupyterhub/requirements.txt
         owner: ubuntu
+      tags: 'requirements'
 
     - name: Install python requirements
       pip:
         requirements: /opt/jupyterhub/requirements.txt
         executable: /opt/tljh/user/bin/pip
-      tags: 'pip'
+      tags: ['pip', 'requirements']
 
     - name: Install git required packages
       apt:
