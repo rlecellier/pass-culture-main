@@ -346,6 +346,7 @@ workflows:
               only:
                 - master
                 - /hotfix-v.*/
+                - PC-3387-fix-tests-on-main
       - tests-webapp:
           filters:
             branches:
