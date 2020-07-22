@@ -7,7 +7,7 @@ services:
       - POSTGRES_PASSWORD=airflow
       - POSTGRES_DB=airflow
     ports:
-      - "5432:5432"
+      - "5436:5432"
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     networks:
@@ -18,7 +18,7 @@ services:
         max-file: "3"
 
   webserver:
-    image: puckel/docker-airflow:1.10.9
+    build: docker/airflow
     restart: always
     depends_on:
       - postgres
@@ -32,7 +32,8 @@ services:
         max-file: "3"
     volumes:
       - ./airflow_files/dags:/usr/local/airflow/dags
-      - ~/.ssh:/usr/local/airflow/ssh_keys
+      - ./infra/scalingo/partial_backup:/config/partial_backup
+      - ~/.ssh:/config/ssh_keys
     ports:
       - "8080:8080"
     networks:

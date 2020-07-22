@@ -81,6 +81,8 @@ elif [[ "$ENV" == "datalake" ]]; then
   SCALINGO_APP=pass-culture-api-datalake
 elif [[ "$ENV" == "perf" ]]; then
   SCALINGO_APP=pass-culture-api-perf
+elif [[ "$ENV" == "analytics" ]]; then
+  SCALINGO_APP=pc-data-analytics-datasource
 elif [[  ! -z "$ENV" ]]; then
   SCALINGO_APP=pass-culture-api-"$ENV"
 fi
