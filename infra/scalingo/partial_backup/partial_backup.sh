@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-BACKUP_PATH=/data/partial_backup
+BACKUP_PATH=/usr/local/airflow/data/partial_backup
 TIMEFORMAT=%R
 
 # GET APPLICATION NAME
@@ -14,7 +14,7 @@ else
 fi
 
 mkdir -p $BACKUP_PATH
-source /usr/local/bin/manage_tunnel.sh
+source /config/partial_backup/manage_tunnel.sh
 
 script_start_time=$(date +%s)
 echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start partial backup DB"

@@ -22,10 +22,8 @@ services:
     restart: always
     depends_on:
       - postgres
-    environment:
-      - LOAD_EX=n
-      - EXECUTOR=Local
-      - FERNET_KEY=YXukzjcfTSLJWb5lPo6FBkPGQqkN-lwPoUJe252ymPc=
+    env_file:
+      - .env
     logging:
       options:
         max-size: 10m
