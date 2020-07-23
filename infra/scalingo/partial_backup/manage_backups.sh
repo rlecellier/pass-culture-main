@@ -72,7 +72,7 @@ then
   exit 1
 fi
 
-source manage_tunnel.sh
+source /config/scalingo/partial_backup/manage_tunnel.sh
 kill_tunnel_if_exist $app_name
 get_tunnel_database_url $app_name
 
@@ -84,19 +84,19 @@ echo "Local postgres url : $tunnel_database_url $TUNNEL_PORT"
 
 if "$drop_database" ; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start database drop"
-  time psql $tunnel_database_url -a -f /usr/local/bin/clean_database.sql \
+  time psql $tunnel_database_url -a -f /config/scalingo/clean_database.sql \
     && echo "Database dropped" || failure_alert "Database drop"
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of database drop"
 fi
 
 if "$restore_backup" ; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start partial restore DB script"
-  source partial_backup_restore.sh && echo "Partial restore completed"
+  source /config/scalingo/partial_backup/partial_backup_restore.sh && echo "Partial restore completed"
 fi
 
 if "$anonymize" ; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start anonymization"
-  TUNNEL_PORT=$TUNNEL_PORT TARGET_USER=$PG_USER TARGET_PASSWORD=$PG_PASSWORD bash anonymize_database.sh -a "$app_name" \
+  TUNNEL_PORT=$TUNNEL_PORT TARGET_USER=$PG_USER TARGET_PASSWORD=$PG_PASSWORD bash /config/scalingo/anonymize_database.sh -a "$app_name" \
     && echo "Anonymized" || failure_alert "Anonymization"
 fi
 

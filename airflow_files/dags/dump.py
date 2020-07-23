@@ -32,37 +32,91 @@ default_args = {
     # 'trigger_rule': 'all_success'
 }
 dag = DAG(
-    'tutorial',
+    'dump_restore',
     default_args=default_args,
-    description='A simple tutorial DAG',
+    description='Dump production database and restore it to pc-data-analytics-datasource',
     schedule_interval=timedelta(days=1),
     catchup=False,
 )
 
 # t1, t2 and t3 are examples of tasks created by instantiating operators
+
+
 t1 = BashOperator(
-    task_id='add_ssh_key',
-    bash_command='eval `ssh-agent -s` && ssh-add /config/ssh_keys/scalingo',
-    dag=dag,
-)
-
-t2 = BashOperator(
-    task_id='sleep',
-    depends_on_past=False,
-    bash_command='sleep 5',
-    retries=3,
-    dag=dag,
-)
-
-t3 = BashOperator(
-    task_id='bash_example',
+    task_id='dump',
 
     # This fails with 'Jinja template not found' error
     # bash_command="/home/batcher/test.sh",
 
     # This works (has a space after)
-    bash_command="/config/partial_backup/partial_backup.sh -a pass-culture-api-dev ",
+    bash_command="/config/scalingo/partial_backup/partial_backup.sh -a pass-culture-api-dev ",
     dag=dag)
 
 
-t1 >> [t2, t3]
+t2 = BashOperator(
+    task_id='clear',
+
+    # This fails with 'Jinja template not found' error
+    # bash_command="/home/batcher/test.sh",
+
+    # This works (has a space after)
+    bash_command="""
+    source /config/scalingo/partial_backup/manage_tunnel.sh
+    
+    kill_tunnel_if_exist pc-data-sandbox
+    get_tunnel_database_url pc-data-sandbox
+    
+    echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start database drop"
+    time psql $tunnel_database_url -a -f /config/scalingo/clean_database.sql \
+    && echo "Database dropped" || failure_alert "Database drop"
+    echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of database drop"
+    
+    kill_tunnel_if_exist pc-data-sandbox 
+    """,
+    dag=dag)
+
+
+t3 = BashOperator(
+    task_id='restore',
+
+    # This fails with 'Jinja template not found' error
+    # bash_command="/home/batcher/test.sh",
+
+    # This works (has a space after)
+    bash_command="""
+    source /config/scalingo/partial_backup/manage_tunnel.sh
+    
+    kill_tunnel_if_exist pc-data-sandbox
+    get_tunnel_database_url pc-data-sandbox
+    
+    echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start partial restore DB script"
+    source /config/scalingo/partial_backup/partial_backup_restore.sh && echo "Partial restore completed"
+    
+    kill_tunnel_if_exist pc-data-sandbox 
+    """,
+    dag=dag)
+
+
+t4 = BashOperator(
+    task_id='anonymize',
+
+    # This fails with 'Jinja template not found' error
+    # bash_command="/home/batcher/test.sh",
+
+    # This works (has a space after)
+    bash_command="""
+    source /config/scalingo/partial_backup/manage_tunnel.sh
+    
+    kill_tunnel_if_exist pc-data-sandbox
+    get_tunnel_database_url pc-data-sandbox
+    
+    echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start anonymization"
+    TUNNEL_PORT=$TUNNEL_PORT TARGET_USER=$PG_USER TARGET_PASSWORD=$PG_PASSWORD bash /config/scalingo/anonymize_database.sh -a "$app_name" \
+    && echo "Anonymized" || failure_alert "Anonymization"
+    
+    kill_tunnel_if_exist pc-data-sandbox 
+    """,
+    dag=dag)
+
+
+t1 >> t2 >> t3 >> t4

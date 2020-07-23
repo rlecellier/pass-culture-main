@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-BACKUP_PATH=/data/partial_backup
+BACKUP_PATH=/usr/local/airflow/data/partial_backup
 
 script_start_time=$(date +%s)
 

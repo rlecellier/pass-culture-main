@@ -29,8 +29,8 @@ services:
         max-size: 10m
         max-file: "3"
     volumes:
-      - ./airflow_files/dags:/usr/local/airflow/dags
-      - ./infra/scalingo/partial_backup:/config/partial_backup
+      - ./airflow_files/:/usr/local/airflow/
+      - ./infra/scalingo/:/config/scalingo
       - ~/.ssh:/config/ssh_keys
     ports:
       - "8080:8080"

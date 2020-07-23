@@ -14,7 +14,7 @@ else
 fi
 
 mkdir -p $BACKUP_PATH
-source /config/partial_backup/manage_tunnel.sh
+source /config/scalingo/partial_backup/manage_tunnel.sh
 
 script_start_time=$(date +%s)
 echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start partial backup DB"
