@@ -42,26 +42,6 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
-  openssh-server:
-      image: linuxserver/openssh-server
-      container_name: openssh-server
-      hostname: openssh-server
-      environment:
-        - PUID=1000
-        - USER_NAME=toto
-        - PGID=1000
-        - SCALINGO_REGION=osc-fr1
-        - TZ=Europe/London
-        - PUBLIC_KEY= #add public key for ssh connection
-      volumes:
-        - ./infra/scalingo/partial_backup:/config/partial_backup
-        - ~/.ssh:/config/ssh_keys
-      ports:
-        - 2222:2222
-      restart: unless-stopped
-      networks:
-        - airflow_network
-
 networks:
   airflow_network:
     driver: bridge

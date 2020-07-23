@@ -14,6 +14,8 @@ RUN apt-get install -y postgresql postgresql-client
 RUN apt-get install -y openssh-client
 RUN curl -O https://cli-dl.scalingo.io/install && bash install
 RUN apt-get install lsof
+RUN apt-get update && apt-get install -y git
 
+RUN git clone https://github.com/betagouv/pass-culture-data-analytics.git
 #ENV AIRFLOW_HOME=/usr/local/airflow
 #COPY ./airflow.cfg /usr/local/airflow/airflow.cfg

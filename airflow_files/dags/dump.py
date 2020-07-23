@@ -60,19 +60,7 @@ t2 = BashOperator(
     # bash_command="/home/batcher/test.sh",
 
     # This works (has a space after)
-    bash_command="""
-    source /config/scalingo/partial_backup/manage_tunnel.sh
-    
-    kill_tunnel_if_exist pc-data-sandbox
-    get_tunnel_database_url pc-data-sandbox
-    
-    echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start database drop"
-    time psql $tunnel_database_url -a -f /config/scalingo/clean_database.sql \
-    && echo "Database dropped" || failure_alert "Database drop"
-    echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of database drop"
-    
-    kill_tunnel_if_exist pc-data-sandbox 
-    """,
+    bash_command="/config/scalingo/clean_database.sh pc-data-sandbox ",
     dag=dag)
 
 
@@ -83,17 +71,7 @@ t3 = BashOperator(
     # bash_command="/home/batcher/test.sh",
 
     # This works (has a space after)
-    bash_command="""
-    source /config/scalingo/partial_backup/manage_tunnel.sh
-    
-    kill_tunnel_if_exist pc-data-sandbox
-    get_tunnel_database_url pc-data-sandbox
-    
-    echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start partial restore DB script"
-    source /config/scalingo/partial_backup/partial_backup_restore.sh && echo "Partial restore completed"
-    
-    kill_tunnel_if_exist pc-data-sandbox 
-    """,
+    bash_command="/config/scalingo/restore_database.sh pc-data-sandbox ",
     dag=dag)
 
 
@@ -104,18 +82,7 @@ t4 = BashOperator(
     # bash_command="/home/batcher/test.sh",
 
     # This works (has a space after)
-    bash_command="""
-    source /config/scalingo/partial_backup/manage_tunnel.sh
-    
-    kill_tunnel_if_exist pc-data-sandbox
-    get_tunnel_database_url pc-data-sandbox
-    
-    echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start anonymization"
-    TUNNEL_PORT=$TUNNEL_PORT TARGET_USER=$PG_USER TARGET_PASSWORD=$PG_PASSWORD bash /config/scalingo/anonymize_database.sh -a "$app_name" \
-    && echo "Anonymized" || failure_alert "Anonymization"
-    
-    kill_tunnel_if_exist pc-data-sandbox 
-    """,
+    bash_command="/config/scalingo/anonymize_db_env.sh pc-data-sandbox ",
     dag=dag)
 
 
