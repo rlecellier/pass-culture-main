@@ -16,6 +16,9 @@ RUN curl -O https://cli-dl.scalingo.io/install && bash install
 RUN apt-get install lsof
 RUN apt-get update && apt-get install -y git
 
+RUN mkdir -m 766 /code
+WORKDIR /code
 RUN git clone https://github.com/betagouv/pass-culture-data-analytics.git
+RUN pwd && cd pass-culture-data-analytics && git checkout PC-3921-add-metabase-cli && pip install -e .
 #ENV AIRFLOW_HOME=/usr/local/airflow
 #COPY ./airflow.cfg /usr/local/airflow/airflow.cfg

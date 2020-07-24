@@ -60,7 +60,7 @@ t2 = BashOperator(
     # bash_command="/home/batcher/test.sh",
 
     # This works (has a space after)
-    bash_command="/config/scalingo/clean_database.sh pc-data-sandbox ",
+    bash_command="/config/scalingo/clean_database.sh pc-data-analytics show_app_name_for_restore ",
     dag=dag)
 
 
